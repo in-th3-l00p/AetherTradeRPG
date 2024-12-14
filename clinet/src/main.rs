@@ -1,3 +1,8 @@
+use crate::engine::Engine;
+
+mod engine;
+
 fn main() {
-    println!("Hello, world!");
+    let engine = Engine::new();
+    engine.start();
 }
