@@ -1,9 +1,11 @@
+pub mod scene;
+
+use crate::engine::rendering::scene::Scene;
 use imgui_glow_renderer::glow::HasContext;
 use imgui_glow_renderer::{glow::{self}, AutoRenderer};
 use imgui_sdl2_support::SdlPlatform;
 use sdl2::event::Event;
 use sdl2::pixels::Color;
-use sdl2::rect::Rect;
 use sdl2::render::Canvas;
 use sdl2::video::{GLProfile, SwapInterval, Window};
 use sdl2::{EventPump, Sdl};
@@ -85,15 +87,19 @@ impl Renderer {
     }
 
     // runs in the game loop
-    pub fn update(&mut self, event_pump: &EventPump) {
+    pub fn update(
+        &mut self,
+        event_pump: &EventPump,
+        scene: &Box<dyn Scene>
+    ) {
         // imgui
         self.imgui_platform.prepare_frame(
             &mut self.imgui,
             &self.canvas.window(),
             event_pump
         );
-        let ui = self.imgui.frame();
-        ui.show_demo_window(&mut true);
+        let mut ui = self.imgui.frame();
+        scene.ui(&mut ui);
         let draw_data = self.imgui.render();
 
         // clear
@@ -102,9 +108,11 @@ impl Renderer {
         self.canvas.set_draw_color(Color::RGB(19, 19, 19));
         self.canvas.clear();
 
-        self.canvas.set_draw_color(Color::RGB(255, 0, 0));
-        self.canvas.fill_rect(Rect::from((100, 100, 100, 100))).unwrap();
-        self.imgui_renderer.render(draw_data).unwrap();
+        scene.render(&mut self.canvas);
+
+        if draw_data.total_idx_count > 0 {
+            self.imgui_renderer.render(draw_data).unwrap();
+        }
         self.canvas.present();
     }
 }

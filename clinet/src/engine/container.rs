@@ -1,10 +1,12 @@
 use std::collections::BTreeMap;
+use sdl2::render::Canvas;
+use sdl2::video::Window;
 
 // required implementation functions for an entity
 pub trait Entity {
     fn new() -> Self where Self: Sized;
     fn update(&mut self, delta_time: &f32) where Self: Sized;
-    fn render(&self) where Self: Sized;
+    fn render(&self, canvas: &Canvas<Window>) where Self: Sized;
 }
 
 // the ecs itself
