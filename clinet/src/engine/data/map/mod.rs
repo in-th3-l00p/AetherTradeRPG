@@ -47,3 +47,31 @@ impl Map {
         self.cells.get(&cell_id)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_works() {
+        let map = Map::new((3, 3));
+        assert_eq!(map.size, (3, 3));
+        assert_eq!(map.data.len(), 3);
+        assert_eq!(map.data.get(0).unwrap().len(), 3);
+    }
+
+    #[test]
+    fn iterator_works() {
+        let map = Map::new((3, 3));
+        for row in map {
+            assert_eq!(row, 0);
+        }
+    }
+
+    #[test]
+    fn get_cell_works() {
+        let map = Map::new((3, 3));
+        let cell = map.get_cell(0);
+        assert!(cell.is_some());
+    }
+}
