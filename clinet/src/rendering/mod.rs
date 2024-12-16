@@ -1,11 +1,11 @@
-use sdl2::video::{GLContext, GLProfile, SwapInterval, Window};
-use imgui_glow_renderer::{glow::{self}, AutoRenderer};
 use imgui_glow_renderer::glow::HasContext;
+use imgui_glow_renderer::{glow::{self}, AutoRenderer};
 use imgui_sdl2_support::SdlPlatform;
 use sdl2::event::Event;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render::Canvas;
+use sdl2::video::{GLProfile, SwapInterval, Window};
 use sdl2::{EventPump, Sdl};
 
 // default settings
@@ -50,6 +50,7 @@ impl Renderer {
             .resizable()
             .build().unwrap()
             .into_canvas()
+            .index(0)
             .build().unwrap();
         canvas
             .window()
@@ -97,6 +98,9 @@ impl Renderer {
 
         // clear
         unsafe { self.imgui_renderer.gl_context().clear(glow::COLOR_BUFFER_BIT) };
+
+        self.canvas.set_draw_color(Color::RGB(19, 19, 19));
+        self.canvas.clear();
 
         self.canvas.set_draw_color(Color::RGB(255, 0, 0));
         self.canvas.fill_rect(Rect::from((100, 100, 100, 100))).unwrap();
