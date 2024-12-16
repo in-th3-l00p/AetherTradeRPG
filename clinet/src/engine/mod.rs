@@ -1,8 +1,8 @@
+use crate::game::scenes::main_menu::MainMenu;
+use rendering::scene::Scene;
 use rendering::Renderer;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use rendering::scene::Scene;
-use crate::game::scenes::main_menu::MainMenu;
 
 pub mod data;
 pub mod rendering;
@@ -21,7 +21,7 @@ impl Engine {
         let engine = Engine {
             renderer,
             sdl_context,
-            running: true,
+            running: false,
             scene: Box::new(MainMenu::new()),
         };
 
@@ -29,6 +29,7 @@ impl Engine {
     }
 
     pub fn start(&mut self) {
+        self.running = true;
         let mut event_pump = self
             .sdl_context
             .event_pump()
@@ -51,5 +52,16 @@ impl Engine {
             self.scene.update(&delta_time);
             self.renderer.update(&event_pump, &self.scene);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::engine::Engine;
+
+    #[test]
+    fn new_works() {
+        let engine = Engine::new();
+        assert!(!engine.running);
     }
 }
