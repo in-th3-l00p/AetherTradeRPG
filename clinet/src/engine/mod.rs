@@ -28,8 +28,9 @@ impl Engine {
     }
 
     pub fn start(&mut self) {
+        let mut event_pump = self.sdl_context.event_pump().unwrap();
         while (self.running) {
-            for event in self.sdl_context.event_pump().unwrap().poll_iter() {
+            for event in event_pump.poll_iter() {
                 self.renderer.handle_event(&event);
                 match event {
                     Event::Quit { .. } | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
@@ -40,7 +41,7 @@ impl Engine {
                 }
             }
 
-            self.renderer.update();
+            self.renderer.update(&event_pump);
         }
     }
 }
