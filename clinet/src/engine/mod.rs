@@ -4,7 +4,7 @@ use sdl2::keyboard::Keycode;
 use rendering::scene::Scene;
 use crate::game::scenes::main_menu::MainMenu;
 
-pub mod container;
+pub mod data;
 pub mod rendering;
 
 pub struct Engine {
