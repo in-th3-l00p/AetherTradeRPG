@@ -3,6 +3,7 @@ use imgui_glow_renderer::{glow::{self}, AutoRenderer};
 use imgui_glow_renderer::glow::HasContext;
 use imgui_sdl2_support::SdlPlatform;
 use sdl2::event::Event;
+use sdl2::render::Canvas;
 use sdl2::Sdl;
 
 // default settings
@@ -15,7 +16,7 @@ const WINDOW_HEIGHT: u32 = 720;
 // handles the entire sdl3 rendering
 pub struct Renderer {
     sdl_context: Sdl,
-    window: Window,
+    canvas: Canvas<Window>,
     gl_context: GLContext,
     imgui: imgui::Context,
     imgui_platform: SdlPlatform,
@@ -40,18 +41,20 @@ impl Renderer {
         gl_attr.set_context_version(3, 3);
         gl_attr.set_context_profile(GLProfile::Core);
 
-        let window = video_subsystem
+        let canvas = video_subsystem
             .window(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)
             .allow_highdpi()
             .opengl()
             .position_centered()
             .resizable()
+            .build().unwrap()
+            .into_canvas()
             .build().unwrap();
 
         // getting the gl context
-        let gl_context = window.gl_create_context().unwrap();
-        window.gl_make_current(&gl_context).unwrap();
-        let gl = glow_context(&window);
+        let gl_context = canvas.window().gl_create_context().unwrap();
+        canvas.window().gl_make_current(&gl_context).unwrap();
+        let gl = glow_context(&canvas.window());
 
         // initializing imgui
         let mut imgui = imgui::Context::create();
@@ -65,7 +68,7 @@ impl Renderer {
         let mut renderer = AutoRenderer::new(gl, &mut imgui).unwrap();
 
         Renderer {
-            window,
+            canvas: canvas,
             sdl_context,
             gl_context,
             imgui,
@@ -83,7 +86,7 @@ impl Renderer {
         // imgui
         self.imgui_platform.prepare_frame(
             &mut self.imgui,
-            &self.window,
+            &self.canvas.window(),
             &self.sdl_context.event_pump().unwrap()
         );
         let ui = self.imgui.frame();
@@ -93,6 +96,6 @@ impl Renderer {
         // updating
         unsafe { self.imgui_renderer.gl_context().clear(glow::COLOR_BUFFER_BIT) };
         self.imgui_renderer.render(draw_data).unwrap();
-        self.window.gl_swap_window();
+        self.canvas.window().gl_swap_window();
     }
 }
