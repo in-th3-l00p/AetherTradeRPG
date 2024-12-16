@@ -29,13 +29,18 @@ impl Engine {
     }
 
     pub fn start(&mut self) {
-        let mut event_pump = self.sdl_context.event_pump().unwrap();
+        let mut event_pump = self
+            .sdl_context
+            .event_pump()
+            .unwrap();
+        let delta_time = 1f32; // todo proper calculation
         while (self.running) {
             for event in event_pump.poll_iter() {
                 self.renderer.handle_event(&event);
                 self.scene.handle_event(&event);
                 match event {
-                    Event::Quit { .. } | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+                    Event::Quit { .. } |
+                    Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                         self.running = false;
                         break;
                     }
@@ -43,7 +48,7 @@ impl Engine {
                 }
             }
 
-            // todo calculate delta time & update the current scene
+            self.scene.update(&delta_time);
             self.renderer.update(&event_pump, &self.scene);
         }
     }
