@@ -15,14 +15,14 @@ pub struct ECSContainer {
 
 
 impl ECSContainer {
-    fn new() -> ECSContainer {
+    pub fn new() -> ECSContainer {
         ECSContainer {
             entities: Vec::new(),
             names: BTreeMap::new(),
         }
     }
 
-    fn add(&mut self, name: &str, entity: Box<dyn Entity>) {
+    pub fn add(&mut self, name: &str, entity: Box<dyn Entity>) {
         self.entities.push(entity);
         self.names.insert(
             name.to_string(),
@@ -30,15 +30,15 @@ impl ECSContainer {
         );
     }
 
-    fn get(&self, name: &str) -> Option<&Box<dyn Entity>> {
+    pub fn get(&self, name: &str) -> Option<&Box<dyn Entity>> {
         self.entities.get(*self.names.get(name)?)
     }
 
-    fn get_mut(&mut self, name: &str) -> Option<&mut Box<dyn Entity>> {
+    pub fn get_mut(&mut self, name: &str) -> Option<&mut Box<dyn Entity>> {
         self.entities.get_mut(*self.names.get(name)?)
     }
 
-    fn remove(&mut self, name: &str) {
+    pub fn remove(&mut self, name: &str) {
         self.names.remove(name);
     }
 }
