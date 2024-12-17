@@ -68,8 +68,8 @@ impl Renderer {
             .fonts()
             .add_font(&[imgui::FontSource::DefaultFontData { config: None }]);
 
-        let mut platform = SdlPlatform::new(&mut imgui);
-        let mut renderer = AutoRenderer::new(gl, &mut imgui).unwrap();
+        let platform = SdlPlatform::new(&mut imgui);
+        let renderer = AutoRenderer::new(gl, &mut imgui).unwrap();
 
         Renderer {
             canvas: canvas,

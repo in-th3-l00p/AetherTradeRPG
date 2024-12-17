@@ -6,7 +6,6 @@ use imgui::{Condition, WindowFlags};
 use sdl2::pixels::Color;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
-use std::fmt::Pointer;
 
 pub struct MainMenu {
     event_queue: EventQueue,

@@ -31,7 +31,7 @@ impl Engine {
     }
 
     fn handle_scene_event(&mut self, event: Event) {
-        match (event) {
+        match event {
             Event::SceneChange(scene) => self.scene = scene,
         }
     }
@@ -43,7 +43,7 @@ impl Engine {
             .event_pump()
             .unwrap();
         let delta_time = 1f32; // todo proper calculation
-        while (self.running) {
+        while self.running {
             for event in event_pump.poll_iter() {
                 self.renderer.handle_event(&event);
                 self.scene.handle_sdl_event(&event);
