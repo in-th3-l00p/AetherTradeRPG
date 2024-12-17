@@ -1,3 +1,5 @@
+mod testing;
+
 use std::collections::BTreeMap;
 
 pub enum Cell {
@@ -38,7 +40,7 @@ impl Map {
         Map {
             size,
             data: vec![vec![0; size.1]; size.0],
-            cells: BTreeMap::from([ (0, Cell::Wall(255, 255, 255)) ]),
+            cells: BTreeMap::from([ (0, Cell::Empty) ]),
             current: (0, 0),
         }
     }
