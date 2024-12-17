@@ -1,6 +1,3 @@
-pub mod scene;
-
-use crate::engine::rendering::scene::Scene;
 use imgui_glow_renderer::glow::HasContext;
 use imgui_glow_renderer::{glow::{self}, AutoRenderer};
 use imgui_sdl2_support::SdlPlatform;
@@ -9,6 +6,7 @@ use sdl2::pixels::Color;
 use sdl2::render::Canvas;
 use sdl2::video::{GLProfile, SwapInterval, Window};
 use sdl2::{EventPump, Sdl};
+use crate::engine::scene::Scene;
 
 // default settings
 // todo: put stuff like this in a config file
@@ -90,7 +88,7 @@ impl Renderer {
     pub fn update(
         &mut self,
         event_pump: &EventPump,
-        scene: &Box<dyn Scene>
+        scene: &mut Box<dyn Scene>
     ) {
         // imgui
         self.imgui_platform.prepare_frame(

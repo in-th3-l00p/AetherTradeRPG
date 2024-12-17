@@ -1,4 +1,7 @@
-use crate::engine::rendering::scene::Scene;
+use crate::engine::data::events::queue::EventQueue;
+use crate::engine::data::events::Event::SceneChange;
+use crate::engine::scene::Scene;
+use crate::game::scenes::test_scene::TestScene;
 use imgui::{Condition, WindowFlags};
 use sdl2::pixels::Color;
 use sdl2::render::Canvas;
@@ -6,17 +9,19 @@ use sdl2::video::Window;
 use std::fmt::Pointer;
 
 pub struct MainMenu {
-
+    event_queue: EventQueue,
 }
 
 impl MainMenu {
     pub fn new() -> MainMenu {
-        MainMenu {}
+        MainMenu {
+            event_queue: EventQueue::new()
+        }
     }
 }
 
 impl Scene for MainMenu {
-    fn ui(&self, ui: &mut imgui::Ui) {
+    fn ui(&mut self, ui: &mut imgui::Ui) {
         let window_size = [400.0, 300.0];
         let display_size = ui.io().display_size;
         let window_pos = [
@@ -46,7 +51,11 @@ impl Scene for MainMenu {
                 let button_spacing = 20.0;
 
                 ui.set_cursor_pos([(window_size[0] - button_size[0]) * 0.5, ui.cursor_pos()[1]]);
-                ui.button_with_size("Test Scene", button_size);
+                if ui.button_with_size("Test Scene", button_size) {
+                    self.event_queue.push(
+                        SceneChange(Box::new(TestScene::new()))
+                    );
+                }
 
                 ui.dummy([0.0, button_spacing]); // Space between buttons
 
@@ -59,5 +68,9 @@ impl Scene for MainMenu {
 
     fn render(&self, canvas: &mut Canvas<Window>) {
         canvas.set_draw_color(Color::RGB(255, 0, 0));
+    }
+
+    fn events(&mut self) -> &mut EventQueue {
+        &mut self.event_queue
     }
 }
