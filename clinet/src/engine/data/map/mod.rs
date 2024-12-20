@@ -13,7 +13,7 @@ pub struct Map {
 
     // related to the gameplay
     pub cell_size: f32,
-    pub spawn_points: (f32, f32, f32), // x y angle
+    pub spawn_points: ((f32, f32), f32), // position, angle
 
     // used by the iterator
     current: (usize, usize),
@@ -26,17 +26,17 @@ impl Map {
             data: vec![vec![0; size.1]; size.0],
             cells: BTreeMap::from([ (0, Cell::Empty) ]),
             cell_size: 16f32,
-            spawn_points: (0f32, 0f32, 0f32),
+            spawn_points: ((0f32, 0f32), 0f32),
             current: (0, 0),
         }
     }
 
+    // creates a point on the map based on the spawn point
     pub fn create_point(&self) {
-        Point {
-            x: self.spawn_points.0,
-            y: self.spawn_points.1,
-            angle: self.spawn_points.2,
-        };
+        Point::new(
+            self.spawn_points.0,
+            self.spawn_points.1,
+        );
     }
 }
 
