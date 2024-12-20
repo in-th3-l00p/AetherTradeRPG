@@ -1,3 +1,5 @@
+pub mod raycaster;
+
 use imgui_glow_renderer::glow::HasContext;
 use imgui_glow_renderer::{glow::{self}, AutoRenderer};
 use imgui_sdl2_support::SdlPlatform;
