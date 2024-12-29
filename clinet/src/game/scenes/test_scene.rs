@@ -98,7 +98,6 @@ impl TestScene {
     fn ui_data(&mut self, ui: &mut Ui) {
         ui
             .window("data")
-            .flags(WindowFlags::NO_RESIZE)
             .position([500.0, 80.0], Condition::FirstUseEver)
             .size([220.0, 100.0], Condition::FirstUseEver)
             .build(|| {
