@@ -57,7 +57,7 @@ impl Engine {
                 }
             }
 
-            self.scene.update(&delta_time);
+            self.scene.update(&event_pump, &delta_time);
             self.renderer.update(&event_pump, &mut self.scene);
 
             // handle scene events

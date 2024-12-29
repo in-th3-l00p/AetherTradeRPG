@@ -16,10 +16,6 @@ impl Raycaster {
         Raycaster { point, map }
     }
 
-    fn update(&mut self, _delta_time: &f32) {
-
-    }
-
     pub fn render(&self, _canvas: &mut Canvas<Window>) {
 
     }
