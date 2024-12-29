@@ -1,13 +1,13 @@
-use imgui::{Condition, Ui, WindowFlags};
-use sdl2::EventPump;
-use sdl2::keyboard::Scancode;
-use sdl2::render::Canvas;
-use sdl2::video::Window;
 use crate::engine::data::events::queue::EventQueue;
 use crate::engine::data::map::{Cell, Map};
 use crate::engine::rendering::raycaster::raypoint::RayPoint;
 use crate::engine::rendering::raycaster::Raycaster;
 use crate::engine::scene::Scene;
+use imgui::{Condition, Ui, WindowFlags};
+use sdl2::keyboard::Scancode;
+use sdl2::render::Canvas;
+use sdl2::video::Window;
+use sdl2::EventPump;
 
 // fix this bs memory management
 pub struct TestScene {
@@ -29,8 +29,9 @@ impl TestScene {
     }
 }
 
-impl Scene for TestScene {
-    fn ui(&mut self, ui: &mut Ui) {
+// ui implementations
+impl TestScene {
+    fn ui_minimap(&mut self, ui: &mut Ui) {
         ui
             .window("mini map")
             .size([408.0, 430.0], Condition::FirstUseEver)
@@ -92,6 +93,39 @@ impl Scene for TestScene {
                     )
                     .build();
             });
+    }
+
+    fn ui_data(&mut self, ui: &mut Ui) {
+        ui
+            .window("data")
+            .flags(WindowFlags::NO_RESIZE)
+            .position([500.0, 80.0], Condition::FirstUseEver)
+            .size([220.0, 100.0], Condition::FirstUseEver)
+            .build(|| {
+                let x_str =
+                    String::from("Player x: ") +
+                    &*self.point.pos.0.to_string();
+                let y_str =
+                    String::from("Player y: ") +
+                    &*self.point.pos.1.to_string();
+                let angle_str =
+                    String::from("Player angle (rad): ") +
+                    &*self.point.angle.to_string();
+                let angle_deg_str =
+                    String::from("Player angle (deg): ") +
+                    &*self.point.angle.to_degrees().to_string();
+                ui.text(x_str);
+                ui.text(y_str);
+                ui.text(angle_str);
+                ui.text(angle_deg_str);
+            });
+    }
+}
+
+impl Scene for TestScene {
+    fn ui(&mut self, ui: &mut Ui) {
+        self.ui_minimap(ui);
+        self.ui_data(ui);
     }
 
     fn update(&mut self, event_pump: &EventPump, delta_time: &f32) {
