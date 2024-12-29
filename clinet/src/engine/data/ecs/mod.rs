@@ -3,6 +3,7 @@ use sdl2::render::Canvas;
 use sdl2::video::Window;
 
 // required implementation functions for an entity
+#[allow(unused)]
 pub trait Entity {
     fn new() -> Self where Self: Sized;
     fn update(&mut self, delta_time: &f32) where Self: Sized;
@@ -10,6 +11,7 @@ pub trait Entity {
 }
 
 // the ecs itself
+#[allow(unused)]
 pub struct ECSContainer {
     entities: Vec<Box<dyn Entity>>,
     names: BTreeMap<String, usize>
@@ -17,6 +19,7 @@ pub struct ECSContainer {
 
 
 impl ECSContainer {
+    #[allow(unused)]
     pub fn new() -> ECSContainer {
         ECSContainer {
             entities: Vec::new(),
@@ -24,6 +27,7 @@ impl ECSContainer {
         }
     }
 
+    #[allow(unused)]
     pub fn add(&mut self, name: &str, entity: Box<dyn Entity>) {
         self.entities.push(entity);
         self.names.insert(
@@ -32,14 +36,17 @@ impl ECSContainer {
         );
     }
 
+    #[allow(unused)]
     pub fn get(&self, name: &str) -> Option<&Box<dyn Entity>> {
         self.entities.get(*self.names.get(name)?)
     }
 
+    #[allow(unused)]
     pub fn get_mut(&mut self, name: &str) -> Option<&mut Box<dyn Entity>> {
         self.entities.get_mut(*self.names.get(name)?)
     }
 
+    #[allow(unused)]
     pub fn remove(&mut self, name: &str) {
         self.names.remove(name);
     }

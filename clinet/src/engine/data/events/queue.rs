@@ -20,6 +20,7 @@ impl EventQueue {
         self.0.push_back(event);
     }
 
+    #[allow(unused)]
     pub fn pop(&mut self) -> Option<Event> {
         self.0.pop_front()
     }

@@ -19,7 +19,6 @@ const WINDOW_HEIGHT: u32 = 720;
 // the "Rendering" submodule
 // handles the entire sdl3 rendering
 pub struct Renderer {
-    sdl_context: Sdl,
     canvas: Canvas<Window>,
     imgui: imgui::Context,
     imgui_platform: SdlPlatform,
@@ -75,7 +74,6 @@ impl Renderer {
 
         Renderer {
             canvas: canvas,
-            sdl_context,
             imgui,
             imgui_platform: platform,
             imgui_renderer: renderer,
