@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 use std::rc::Rc;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
@@ -7,12 +8,12 @@ use crate::engine::rendering::raycaster::raypoint::RayPoint;
 pub mod raypoint;
 
 pub struct Raycaster {
-    point: Rc<RayPoint>,
+    point: Rc<RefCell<RayPoint>>,
     map: Rc<Map>
 }
 
 impl Raycaster {
-    pub fn new(point: Rc<RayPoint>, map: Rc<Map>) -> Self {
+    pub fn new(point: Rc<RefCell<RayPoint>>, map: Rc<Map>) -> Self {
         Raycaster { point, map }
     }
 

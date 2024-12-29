@@ -1,5 +1,8 @@
 use std::rc::Rc;
+use std::cell::RefCell;
 use imgui::{Condition, Ui, WindowFlags};
+use sdl2::EventPump;
+use sdl2::keyboard::Scancode;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 use crate::engine::data::events::queue::EventQueue;
@@ -8,17 +11,18 @@ use crate::engine::rendering::raycaster::raypoint::RayPoint;
 use crate::engine::rendering::raycaster::Raycaster;
 use crate::engine::scene::Scene;
 
+// fix this bs memory management
 pub struct TestScene {
     event_queue: EventQueue,
     map: Rc<Map>,
-    point: Rc<RayPoint>,
+    point: Rc<RefCell<RayPoint>>,
     raycaster: Raycaster
 }
 
 impl TestScene {
     pub fn new() -> Self {
         let map = Rc::new(Map::create_test_map());
-        let point = Rc::new(map.create_point());
+        let point = Rc::new(RefCell::new(map.create_point()));
         TestScene {
             event_queue: EventQueue::new(),
             map: Rc::clone(&map),
@@ -67,8 +71,8 @@ impl Scene for TestScene {
                     .get_window_draw_list()
                     .add_circle(
                         [
-                            pos[0] + self.point.pos.0 * (cell_size / self.map.cell_size),
-                            pos[1] + self.point.pos.1 * (cell_size / self.map.cell_size)
+                            pos[0] + self.point.borrow().pos.0 * (cell_size / self.map.cell_size),
+                            pos[1] + self.point.borrow().pos.1 * (cell_size / self.map.cell_size)
                         ],
                         5.0,
                         [1.0, 0.0, 0.0]
@@ -80,12 +84,12 @@ impl Scene for TestScene {
                     .get_window_draw_list()
                     .add_line(
                         [
-                            pos[0] + self.point.pos.0 * (cell_size / self.map.cell_size),
-                            pos[1] + self.point.pos.1 * (cell_size / self.map.cell_size)
+                            pos[0] + self.point.borrow().pos.0 * (cell_size / self.map.cell_size),
+                            pos[1] + self.point.borrow().pos.1 * (cell_size / self.map.cell_size)
                         ],
                         [
-                            pos[0] + self.point.pos.0 * (cell_size / self.map.cell_size) + self.point.angle.cos() * DIRECTION_MULTIPLIER,
-                            pos[1] + self.point.pos.1 * (cell_size / self.map.cell_size) + self.point.angle.sin() * DIRECTION_MULTIPLIER
+                            pos[0] + self.point.borrow().pos.0 * (cell_size / self.map.cell_size) + self.point.borrow().angle.cos() * DIRECTION_MULTIPLIER,
+                            pos[1] + self.point.borrow().pos.1 * (cell_size / self.map.cell_size) + self.point.borrow().angle.sin() * DIRECTION_MULTIPLIER
                         ],
                         [1.0, 0.0, 0.0]
                     )
@@ -93,11 +97,34 @@ impl Scene for TestScene {
             });
     }
 
-    fn events(&mut self) -> &mut EventQueue {
-        &mut self.event_queue
+    fn update(&mut self, event_pump: &EventPump, delta_time: &f32) {
+        let keys = event_pump.keyboard_state();
+        let mut point = self.point.borrow_mut();
+        let velocity: f32 = 0.5 * delta_time;
+        let rotate_speed: f32 = 0.02 * delta_time;
+        if keys.is_scancode_pressed(Scancode::W)
+        {
+            point.pos.0 += velocity * delta_time * point.angle.cos();
+            point.pos.1 += velocity * delta_time * point.angle.sin();
+        }
+        if keys.is_scancode_pressed(Scancode::A) {
+            point.rotate(-rotate_speed * delta_time);
+        }
+        if keys.is_scancode_pressed(Scancode::S)
+        {
+            point.pos.0 -= velocity * delta_time * point.angle.cos();
+            point.pos.1 -= velocity * delta_time * point.angle.sin();
+        }
+        if keys.is_scancode_pressed(Scancode::D) {
+            point.rotate(rotate_speed * delta_time);
+        }
     }
 
     fn render(&self, _canvas: &mut Canvas<Window>) {
 
+    }
+
+    fn events(&mut self) -> &mut EventQueue {
+        &mut self.event_queue
     }
 }
