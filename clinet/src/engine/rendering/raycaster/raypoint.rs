@@ -1,14 +1,14 @@
 use std::f32::consts::PI;
 
-pub struct Point {
+pub struct RayPoint {
     pub pos: (f32, f32),
     pub angle: f32,
     pub dir: (f32, f32),
 }
 
-impl Point {
+impl RayPoint {
     pub fn new(initial_pos: (f32, f32), initial_angle: f32) -> Self {
-        Point {
+        RayPoint {
             pos: initial_pos,
             angle: initial_angle,
             dir: (initial_angle * initial_angle.cos(), initial_angle * initial_angle.sin())
