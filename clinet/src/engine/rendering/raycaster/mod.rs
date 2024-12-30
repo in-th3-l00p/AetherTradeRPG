@@ -28,9 +28,14 @@ impl Raycaster {
         }
         angle
     }
-
-    // calculates what it should render using the DDA algorithm
-    pub fn calculate(&self, map: &Map, point: &RayPoint, screen_width: u32) -> (f32, f32) {
+    pub fn render(
+        &self,
+        canvas: &mut Canvas<Window>,
+        map: &Map,
+        point: &RayPoint,
+    ) -> Vec<Vec2> {
+        let mut rays = vec![];
+        let screen_width = canvas.window().size().0;
         for i in (1u32 .. screen_width + 1) {
             // calculating the current ray direction
             let current_ray: f32 = (i as f32 / (screen_width as f32)) * self.fov; // the current ray offset
@@ -50,7 +55,7 @@ impl Raycaster {
             let mut horizontal_side: Vec2 = (
                 (
                     map_cell.0 +
-                    if current_direction.0 > 0f32 { 1f32 } else { 0f32 }
+                        if current_direction.0 > 0f32 { 1f32 } else { 0f32 }
                 ) *
                     map.cell_size - point.pos.0,
                 0_f32
@@ -60,7 +65,7 @@ impl Raycaster {
                 0_f32,
                 (
                     map_cell.1 +
-                    if current_direction.1 > 0f32 { 1f32 } else { 0f32 }
+                        if current_direction.1 > 0f32 { 1f32 } else { 0f32 }
                 ) *
                     map.cell_size - point.pos.1
             );
@@ -81,19 +86,9 @@ impl Raycaster {
 
             }
 
-            if i == screen_width / 2 {
-                return vertical_ray;
-            }
+            rays.push(horizontal_ray);
         }
 
-        (0f32, 0f32)
-    }
-
-    pub fn render(
-        &self, _canvas: &mut Canvas<Window>,
-        _point: &RayPoint,
-        _map: &Map)
-    {
-
+        rays
     }
 }
