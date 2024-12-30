@@ -36,7 +36,7 @@ impl Raycaster {
     ) -> Vec<Vec2> {
         let mut rays = vec![];
         let screen_width = canvas.window().size().0;
-        for i in (1u32 .. screen_width + 1) {
+        for i in 1u32 .. screen_width + 1 {
             // calculating the current ray direction
             let current_ray: f32 = (i as f32 / (screen_width as f32)) * self.fov; // the current ray offset
             let current_angle: f32 = Self::clamp_angle(point.angle - self.fov / 2f32 + current_ray);
@@ -71,14 +71,27 @@ impl Raycaster {
             );
             vertical_side.0 = vertical_side.1 / current_angle.tan();
 
-            // rayzz
-            let horizontal_ray = (
-                point.pos.0 + horizontal_side.0,
-                point.pos.1 + horizontal_side.1
+            // calculating dem deltas
+            // ich habe paranoide schizofrenie
+            let mut horizontal_delta: Vec2 = (
+                if current_direction.0 > 0f32 { map.cell_size } else { -map.cell_size },
+                0f32
             );
-            let vertical_ray = (
-                point.pos.0 + vertical_side.0,
-                point.pos.1 + vertical_side.1
+            horizontal_delta.1 = current_angle.tan() * horizontal_delta.0;
+            let mut vertical_delta: Vec2 = (
+                0f32,
+                if current_direction.1 > 0f32 { map.cell_size } else { -map.cell_size }
+            );
+            vertical_delta.0 = vertical_delta.1 / current_angle.tan();
+
+            // rayzz
+            let mut horizontal_ray = (
+                point.pos.0 + horizontal_side.0 + horizontal_delta.0,
+                point.pos.1 + horizontal_side.1 + horizontal_delta.1,
+            );
+            let mut vertical_ray = (
+                point.pos.0 + vertical_side.0 + vertical_delta.0,
+                point.pos.1 + vertical_side.1 + vertical_delta.1,
             );
 
             let hit = true;
@@ -86,7 +99,7 @@ impl Raycaster {
 
             }
 
-            rays.push(horizontal_ray);
+            rays.push(vertical_ray);
         }
 
         rays
