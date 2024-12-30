@@ -65,7 +65,7 @@ impl Scene for MainMenu {
             });
     }
 
-    fn render(&self, canvas: &mut Canvas<Window>) {
+    fn render(&mut self, canvas: &mut Canvas<Window>) {
         canvas.set_draw_color(Color::RGB(255, 0, 0));
     }
 

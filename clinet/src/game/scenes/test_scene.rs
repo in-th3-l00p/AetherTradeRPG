@@ -14,7 +14,8 @@ pub struct TestScene {
     event_queue: EventQueue,
     map: Map,
     point: RayPoint,
-    raycaster: Raycaster
+    raycaster: Raycaster,
+    last_ray: (f32, f32)
 }
 
 impl TestScene {
@@ -24,7 +25,8 @@ impl TestScene {
         TestScene {
             event_queue: EventQueue::new(),
             map, point,
-            raycaster: Raycaster::new()
+            raycaster: Raycaster::new(90f32.to_radians(), 64f32),
+            last_ray: (0f32, 0f32)
         }
     }
 }
@@ -92,6 +94,21 @@ impl TestScene {
                         [1.0, 0.0, 0.0]
                     )
                     .build();
+
+                ui
+                    .get_window_draw_list()
+                    .add_line(
+                        [
+                            pos[0] + self.point.pos.0 * (cell_size / self.map.cell_size),
+                            pos[1] + self.point.pos.1 * (cell_size / self.map.cell_size)
+                        ],
+                        [
+                            pos[0] + self.last_ray.0 * (cell_size / self.map.cell_size),
+                            pos[1] + self.last_ray.1 * (cell_size / self.map.cell_size)
+                        ],
+                        [1.0, 0.0, 0.0]
+                    )
+                    .build();
             });
     }
 
@@ -99,7 +116,7 @@ impl TestScene {
         ui
             .window("data")
             .position([500.0, 80.0], Condition::FirstUseEver)
-            .size([220.0, 100.0], Condition::FirstUseEver)
+            .size([220.0, 140.0], Condition::FirstUseEver)
             .build(|| {
                 let x_str =
                     String::from("Player x: ") +
@@ -113,10 +130,19 @@ impl TestScene {
                 let angle_deg_str =
                     String::from("Player angle (deg): ") +
                     &*self.point.angle.to_degrees().to_string();
+                let last_ray_x =
+                    String::from("Last ray X: ") +
+                    &*self.last_ray.0.to_string();
+                let last_ray_y =
+                    String::from("Last ray Y: ") +
+                    &*self.last_ray.1.to_string();
+
                 ui.text(x_str);
                 ui.text(y_str);
                 ui.text(angle_str);
                 ui.text(angle_deg_str);
+                ui.text(last_ray_x);
+                ui.text(last_ray_y);
             });
     }
 }
@@ -149,8 +175,12 @@ impl Scene for TestScene {
         }
     }
 
-    fn render(&self, _canvas: &mut Canvas<Window>) {
-        self.raycaster.render(_canvas, &self.point, &self.map)
+    fn render(&mut self, canvas: &mut Canvas<Window>) {
+        self.last_ray = self.raycaster.calculate(
+            &self.map, &self.point,
+            canvas.window().size().0
+        );
+        self.raycaster.render(canvas, &self.point, &self.map)
     }
 
     fn events(&mut self) -> &mut EventQueue {

@@ -8,6 +8,6 @@ pub trait Scene {
     fn handle_sdl_event(&mut self, _event: &Event) {}
     fn ui(&mut self, _ui: &mut imgui::Ui) { }
     fn update(&mut self, _event_pump: &EventPump, _delta_time: &f32) {}
-    fn render(&self, _canvas: &mut Canvas<Window>) {}
+    fn render(&mut self, _canvas: &mut Canvas<Window>) {}
     fn events(&mut self) -> &mut EventQueue;
 }
