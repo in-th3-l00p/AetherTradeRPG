@@ -1,5 +1,5 @@
 use std::f32::consts::PI;
-use crate::engine::data::map::Map;
+use crate::engine::data::map::{Cell, Map};
 use crate::engine::rendering::raycaster::raypoint::RayPoint;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
@@ -86,20 +86,87 @@ impl Raycaster {
 
             // rayzz
             let mut horizontal_ray = (
-                point.pos.0 + horizontal_side.0 + horizontal_delta.0,
-                point.pos.1 + horizontal_side.1 + horizontal_delta.1,
+                point.pos.0 + horizontal_side.0,
+                point.pos.1 + horizontal_side.1
             );
             let mut vertical_ray = (
-                point.pos.0 + vertical_side.0 + vertical_delta.0,
-                point.pos.1 + vertical_side.1 + vertical_delta.1,
+                point.pos.0 + vertical_side.0,
+                point.pos.1 + vertical_side.1,
             );
 
-            let hit = true;
-            while !hit {
+            let offset = (
+                if current_direction.0 >= 0f32 { 0f32 } else { -1f32 },
+                if current_direction.1 >= 0f32 { 0f32 } else { -1f32 },
+            );
 
+            let mut horizontal_hit: Option<(usize, usize)> = None;
+            let mut lol = 0;
+            while horizontal_hit.is_none() && lol < 5 {
+                let map_hit = (
+                    ((horizontal_ray.0 + offset.0) / map.cell_size).floor() as i32,
+                    (horizontal_ray.1 / map.cell_size).floor() as i32,
+                );
+                if
+                    map_hit.0 >= 0i32 && map_hit.0 < map.size.0 as i32 &&
+                    map_hit.1 >= 0i32 && map_hit.1 < map.size.1 as i32
+                {
+                    let cell = map.data[map_hit.1 as usize][map_hit.0 as usize];
+                    if map.cells[&cell] != Cell::Empty {
+                        horizontal_hit = Option::from(
+                            (map_hit.0 as usize, map_hit.1 as usize)
+                        );
+                        break;
+                    }
+                }
+
+                horizontal_ray = (
+                    horizontal_ray.0 + horizontal_delta.0,
+                    horizontal_ray.1 + horizontal_delta.1,
+                );
+                lol += 1;
             }
 
-            rays.push(vertical_ray);
+            let mut vertical_hit: Option<(usize, usize)> = None;
+            let mut lol = 0;
+            while vertical_hit.is_none() && lol < 5 {
+                let map_hit = (
+                    (vertical_ray.0 / map.cell_size).floor() as i32,
+                    ((vertical_ray.1 + offset.1) / map.cell_size).floor() as i32,
+                );
+
+                if
+                    map_hit.0 >= 0i32 && map_hit.0 < map.size.0 as i32 &&
+                    map_hit.1 >= 0i32 && map_hit.1 < map.size.1 as i32
+                {
+                    let cell = map.data[map_hit.1 as usize][map_hit.0 as usize];
+                    if map.cells[&cell] != Cell::Empty {
+                        vertical_hit = Option::from(
+                            (map_hit.0 as usize, map_hit.1 as usize)
+                        );
+                        break;
+                    }
+                }
+
+                vertical_ray = (
+                    vertical_ray.0 + vertical_delta.0,
+                    vertical_ray.1 + vertical_delta.1,
+                );
+                lol += 1;
+            }
+
+            let horizontal_dist =
+                (point.pos.0 - horizontal_ray.0) * (point.pos.0 - horizontal_ray.0) +
+                (point.pos.1 - horizontal_ray.1) * (point.pos.1 - horizontal_ray.1);
+
+            let vertical_dist =
+                (point.pos.0 - vertical_ray.0) * (point.pos.0 - vertical_ray.0) +
+                (point.pos.1 - vertical_ray.1) * (point.pos.1 - vertical_ray.1);
+
+            if horizontal_dist < vertical_dist {
+                rays.push(horizontal_ray);
+            } else {
+                rays.push(vertical_ray);
+            }
         }
 
         rays

@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use crate::engine::rendering::raycaster::raypoint::RayPoint;
 
+#[derive(Eq, PartialEq)]
 pub enum Cell {
     Empty,
     Wall(u8, u8, u8),
