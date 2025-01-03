@@ -1,10 +1,12 @@
 use std::f32::consts::PI;
+use sdl2::pixels::Color;
 use crate::engine::data::map::{Cell, Map};
 use crate::engine::rendering::raycaster::raypoint::RayPoint;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 
 pub mod raypoint;
+mod rayhit;
 
 pub struct Raycaster {
     fov: f32,
@@ -23,7 +25,7 @@ impl Raycaster {
         while angle < 0f32 {
             angle += 2f32 * PI;
         }
-        while angle >= 2f32 * PI {
+        while angle > 2f32 * PI {
             angle -= 2f32 * PI;
         }
         angle
@@ -162,11 +164,23 @@ impl Raycaster {
                 (point.pos.0 - vertical_ray.0) * (point.pos.0 - vertical_ray.0) +
                 (point.pos.1 - vertical_ray.1) * (point.pos.1 - vertical_ray.1);
 
+            // rendering
+            let mut distance = horizontal_dist;
             if horizontal_dist < vertical_dist {
                 rays.push(horizontal_ray);
             } else {
                 rays.push(vertical_ray);
+                distance = vertical_dist;
             }
+            distance *= (point.angle - current_angle).cos();
+            let height = canvas.window().size().1 as f32 / distance * map.cell_size;
+            canvas.set_draw_color(Color::WHITE);
+            canvas
+                .draw_line(
+                    (i as i32, (canvas.window().size().1 as f32 / 2f32 - height / 2f32) as i32),
+                    (i as i32, (canvas.window().size().1 as f32 / 2f32 + height / 2f32) as i32)
+                )
+                .unwrap();
         }
 
         rays

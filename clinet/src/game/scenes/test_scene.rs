@@ -144,7 +144,7 @@ impl Scene for TestScene {
 
     fn update(&mut self, event_pump: &EventPump, delta_time: &f32) {
         let keys = event_pump.keyboard_state();
-        let velocity: f32 = 0.5 * delta_time;
+        let velocity: f32 = 0.2 * delta_time;
         let rotate_speed: f32 = 0.02 * delta_time;
         if keys.is_scancode_pressed(Scancode::W) {
             self.point.pos.0 += velocity * delta_time * self.point.angle.cos();
